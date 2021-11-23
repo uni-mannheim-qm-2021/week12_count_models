@@ -142,12 +142,13 @@ hist(Y)
 The Poisson PDF for a single observation:
 
 $$
-f_{Poisson}(y_{i}|\lambda) = \{
-  \begin{array}{l l}
-    \frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} & 
-      \text{ for } \lambda > 0\text{ and }y_{i}=0,1,\ldots\\
-			0 & otherwise
-  \end{array}
+f_{Poisson}(y_{i}|\lambda) = 
+\begin{cases}
+  \frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} & 
+    \text{ for } \lambda > 0\text{ and }y_{i}=0,1,\ldots\\
+  0 & 
+    otherwise
+\end{cases}
 $$
 
 The probability density of all the data (i.e., $N$ observations, given that $Y_i$ and $Y_j$ are independent conditional on $X$ for all $i\not= j$ and identically distributed)  is the product of all $N$ individual observations:
