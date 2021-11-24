@@ -741,6 +741,17 @@ df_m4 <-
 
 Now we have everything to calculate the first differences. Continue to calculate the first differences between different scenarions for model 3 and model 4.
 
+Calculate the following first differences for both models:
+
+$$
+FD_{Autocracy-Democracy} = E(Y | X_{Autocracy}) - E(Y | X_{Democracy})
+$$
+and
+
+$$
+FD_{Autocracy-Anocracy} = E(Y | X_{Autocracy}) - E(Y | X_{Anocracy})
+$$
+
 ```{r fd-4, error = T}
 # Model 3: Killings by Rebel Groups
 # Autocracy - Democracy

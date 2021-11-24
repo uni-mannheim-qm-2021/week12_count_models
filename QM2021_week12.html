@@ -620,7 +620,7 @@ Pr(Y|\lambda) = \prod_{i=1}^{N} \frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!}
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="do">## BFGS        1.002179 0.5010288 8386.941     46     11    NA        0 TRUE TRUE</span></span>
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="do">##             xtime</span></span>
 <span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Nelder-Mead  0.03</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="do">## BFGS         0.01</span></span></code></pre></div>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="do">## BFGS         0.02</span></span></code></pre></div>
 <p>(How) Can we interpret those coefficients?</p>
 <div id="eck-and-hultman-2007-one-sided-violence-against-civilians" class="section level2 unnumbered">
 <h2 class="unnumbered">Eck and Hultman 2007: One-sided violence against civilians</h2>
@@ -1357,6 +1357,13 @@ Excluding observation Rwanda 1994
 <span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a><span class="do">## 45: df_m4 &lt;- </span></span>
 <span id="cb29-49"><a href="#cb29-49" aria-hidden="true" tabindex="-1"></a><span class="do">##    ^</span></span></code></pre></div>
 <p>Now we have everything to calculate the first differences. Continue to calculate the first differences between different scenarions for model 3 and model 4.</p>
+<p>Calculate the following first differences for both models:</p>
+<p><span class="math display">\[
+FD_{Autocracy-Democracy} = E(Y | X_{Autocracy}) - E(Y | X_{Democracy})
+\]</span> and</p>
+<p><span class="math display">\[
+FD_{Autocracy-Anocracy} = E(Y | X_{Autocracy}) - E(Y | X_{Anocracy})
+\]</span></p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model 3: Killings by Rebel Groups</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Autocracy - Democracy</span></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>df_m3<span class="sc">$</span>fd_auto_dem <span class="ot">&lt;-</span> </span>
