@@ -302,7 +302,8 @@ res # check results
 
 (How) Can we interpret those coefficients? 
 
-## Eck and Hultman 2007: One-sided violence against civilians 
+## Eck and Hultman 2007: One-sided violence against civilians {.unnumbered} 
+
 Load the eck_rep.dta replication dataset for @eck_hultman_2007
 
 ```{r poisson-9}
@@ -775,7 +776,7 @@ ci_fd_auto_ano_m4 <-
 ```
 
 
-## Plot first differences {.tabset}
+## Plot first differences {.unnumbered .tabset}
 
 ### Base R {.unnumbered}
 
@@ -871,7 +872,7 @@ plot <- ggplot(results, aes(x = y, y = x)) +
        color = "")  +
   geom_point(aes(x = y,
                  y = x,
-                 color = group)) +
+                 color = group), size = 4) +
   geom_linerange(aes(x = y, 
                      ymin = lower,
                      ymax = upper,
@@ -881,7 +882,7 @@ scale_y_continuous(limits = c(-50, 100)) +
   coord_flip() # flip x and y 
 
 # print plot
-plot + scale_color_viridis(discrete = T) & theme(legend.position = "right")
+plot + scale_color_grey(start=0,end=0.45) & theme(legend.position = "right")
 ```
 
 

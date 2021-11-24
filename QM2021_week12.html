@@ -619,11 +619,11 @@ Pr(Y|\lambda) = \prod_{i=1}^{N} \frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!}
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Nelder-Mead 1.002208 0.5010022 8386.941     71     NA    NA        0 TRUE TRUE</span></span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="do">## BFGS        1.002179 0.5010288 8386.941     46     11    NA        0 TRUE TRUE</span></span>
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="do">##             xtime</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Nelder-Mead  0.02</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="do">## BFGS         0.02</span></span></code></pre></div>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Nelder-Mead  0.03</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="do">## BFGS         0.01</span></span></code></pre></div>
 <p>(How) Can we interpret those coefficients?</p>
-<div id="eck-and-hultman-2007-one-sided-violence-against-civilians" class="section level2" number="2.1">
-<h2 number="2.1"><span class="header-section-number">2.1</span> Eck and Hultman 2007: One-sided violence against civilians</h2>
+<div id="eck-and-hultman-2007-one-sided-violence-against-civilians" class="section level2 unnumbered">
+<h2 class="unnumbered">Eck and Hultman 2007: One-sided violence against civilians</h2>
 <p>Load the eck_rep.dta replication dataset for <span class="citation">Eck and Hultman (2007)</span></p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dta <span class="ot">&lt;-</span> <span class="fu">read.dta</span>(<span class="st">&quot;raw-data/eck_rep.dta&quot;</span>, <span class="at">convert.factors =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1393,8 +1393,8 @@ Excluding observation Rwanda 1994
 <span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 15: ci_fd_auto_ano_m4 &lt;- </span></span>
 <span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="do">##    ^</span></span></code></pre></div>
 </div>
-<div id="plot-first-differences" class="section level2 tabset" number="5.3">
-<h2 class="tabset" number="5.3"><span class="header-section-number">5.3</span> Plot first differences</h2>
+<div id="plot-first-differences" class="section level2 unnumbered tabset">
+<h2 class="unnumbered tabset">Plot first differences</h2>
 <div id="base-r-2" class="section level3 unnumbered">
 <h3 class="unnumbered">Base R</h3>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>cis <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
@@ -1501,7 +1501,7 @@ Excluding observation Rwanda 1994
 <span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> y,</span>
 <span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> x,</span>
 <span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> group</span>
-<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">+</span></span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
 <span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(</span>
 <span id="cb33-37"><a href="#cb33-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> y,</span>
 <span id="cb33-38"><a href="#cb33-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> lower,</span>
@@ -1513,7 +1513,7 @@ Excluding observation Rwanda 1994
 <span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="co"># flip x and y</span></span>
 <span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Error in ggplot(results, aes(x = y, y = x)): Objekt &#39;results&#39; nicht gefunden</span></span>
 <span id="cb33-46"><a href="#cb33-46" aria-hidden="true" tabindex="-1"></a><span class="co"># print plot</span></span>
-<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a>plot <span class="sc">+</span> <span class="fu">scale_color_viridis</span>(<span class="at">discrete =</span> T) <span class="sc">&amp;</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span>)</span>
+<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a>plot <span class="sc">+</span> <span class="fu">scale_color_grey</span>(<span class="at">start =</span> <span class="dv">0</span>, <span class="at">end =</span> <span class="fl">0.45</span>) <span class="sc">&amp;</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span>)</span>
 <span id="cb33-48"><a href="#cb33-48" aria-hidden="true" tabindex="-1"></a><span class="do">## NULL</span></span></code></pre></div>
 </div>
 </div>
