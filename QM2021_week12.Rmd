@@ -143,8 +143,6 @@ lambda <- exp_resp(beta0 = beta0,
 
 Let's quickly plot what we just did:
 
-## Base R {.unnumbered}
-
 ```{r poisson-3}
 par(mfrow = c(1, 2))
 
@@ -192,9 +190,75 @@ summary(Y)
 hist(Y)
 ```
 
+
+Let's add this step to the plot above:
+
+## Base R {.unnumbered}
+
+```{r poisson-5}
+par(mfrow = c(1, 3))
+
+# Systematic component: linear predictor
+plot(x = X,
+     y = beta0 + beta1*X,
+     pch = 19,
+     cex = 0.5,
+     col = viridis(1, 0.5),
+     main = "Simulated linear predictor",
+     font.main = 1,
+     cex.main = 0.8,
+     ylab = expression(mu[i]),
+     xlab = expression(X[i]),
+     las  = 1, 
+     bty = "n")
+text(x = 1.5,
+     y = 0.7,
+     labels = expression(mu[i] == X[i] * beta))
+
+# Systematic component: lambda 
+plot(x = X,
+     y = lambda,
+     pch = 19,
+     cex = 0.5,
+     col = viridis(1, 0.5),
+     main = "Simulated lambda",
+     font.main = 1,
+     cex.main = 0.8,
+     ylab = expression(lambda[i]),
+     xlab = expression(X[i]),
+     las = 1, 
+     bty = "n")
+text(x = -1,
+     y = 7.85,
+     labels = expression(lambda[i] == exp(mu[i])))
+
+# observed values
+plot(x = X,
+     y = jitter(Y),
+     pch = 19,
+     cex = 0.5,
+     col = viridis(2, 0.5)[2],
+     main = "Observed Y",
+     font.main = 1,
+     cex.main = 0.8,
+     ylab = "Y",
+     xlab = expression(X[i]),
+     las = 1, 
+     bty = "n")
+points(x = X,
+       y = lambda,
+       pch = 19,
+       cex = 0.5,
+       col = viridis(2, 0.5)[1])
+text(x = -1,
+     y = 11,
+     labels = expression(lambda[i] == exp(mu[i])))
+
+```
+
 ## ggplot2 {.unnumbered}
 
-```{r poisson-5, warning=FALSE, out.width="100%"}
+```{r poisson-6, warning=FALSE, out.width="100%"}
 # Systematic component: LP
 syst <- ggplot() +
   geom_point(aes(x = X, y = beta0 + beta1*X),
@@ -204,7 +268,7 @@ syst <- ggplot() +
        title = "Linear Predictor") +
   annotate("text",
            label = expression(mu[i] == X[i] * beta),
-           x = 1.5, y = -0.3,
+           x = 1.5, y = 0.7,
            hjust = 0) 
 
 # Systematic component: Lambda
@@ -215,22 +279,22 @@ syst2 <- ggplot() +
        y = expression(p[i]),
        title = "Lambda") +
   annotate("text",
-           label = expression(pi[i] == frac(exp(mu[i]), exp(1 + mu[i]))),
+           label = expression(lambda[i] == exp(mu[i])),
            x = -1, y = 7.85)
 
-syst + syst2 + 
+yhat <- ggplot() +
+  geom_point(aes(x = X, y = Y), color = viridis(2, 0.5)[2]) +
+  geom_point(aes(x = X, y = lambda), color = viridis(2, 0.5)[1]) +
+  labs(x = expression(X[i]),
+       y = expression(Y[i]),
+       title = "Observed Y") +
+  annotate("text",
+           label = expression(lambda[i] == exp(mu[i])),
+           x = -1, y = 11)
+
+syst + syst2 + yhat +
   plot_annotation(title = "Simulated Quantities") &
   scale_color_viridis(direction = -1) & theme(legend.position = "none")
-```
-
-Finally, we can get Y from the underlying poisson distribution
-Remember `r`, `d`, `q`, `p`?
-
-```{r poisson-6, warning=FALSE}
-Y <- rpois(n, lambda)
-
-summary(Y)
-ggplot(as.data.frame(Y), aes(x=Y)) + geom_histogram(bins = 10)
 ```
 
 # Poisson MLE
