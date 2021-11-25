@@ -48,7 +48,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       collapse = TRUE,
                       out.width="\\textwidth", # for larger figures 
                       attr.output = 'style="max-height: 200px"',
-                      tidy = 'styler' # styles the code in the output 
+                      tidy = 'styler' # styles the code in the output
                       )
 
 # The next bit is quite powerful and useful. 
@@ -125,7 +125,7 @@ X <- rnorm(n, 0, 1)
 Now we can generate `lambda` (aka $\lambda$ on slide 13) via the *exponential response function*:
 
 $$
-\lambda_i = \exp(X_i\beta) = \exp(\mu_i) \Rightarrow 0 < \lambda
+\lambda_i = \exp(X_i\beta) = \exp(\mu_i) \Rightarrow \lambda_i > 0
 $$
 
 Here `mu` is the linear predictor. As with logit and probit models last week, we need to transform the linear predictor, but this time with a different response function. The *exponential response function* ensures that for any value of $X$ and $\beta$, the systematic component is reparameterized to be greater than 0.
@@ -144,7 +144,7 @@ lambda <- exp_resp(beta0 = beta0,
 Let's quickly plot what we just did:
 
 ```{r poisson-3}
-par(mfrow = c(1, 2))
+par(mfrow = c(1, 2), las = 1)
 
 # Systematic component: linear predictor
 plot(x = X,
@@ -157,7 +157,6 @@ plot(x = X,
      cex.main = 0.8,
      ylab = expression(mu[i]),
      xlab = expression(X[i]),
-     las  = 1, 
      bty = "n")
 text(x = 1.5,
      y = -0.3,
@@ -169,25 +168,28 @@ plot(x = X,
      pch = 19,
      cex = 0.5,
      col = viridis(1, 0.5),
-     main = "Simulated lambda",
+     main = expression(paste("Simulated ", lambda)),
      font.main = 1,
      cex.main = 0.8,
      ylab = expression(lambda[i]),
      xlab = expression(X[i]),
-     las = 1, 
      bty = "n")
 text(x = -1,
      y = 7.85,
      labels = expression(lambda[i] == exp(mu[i])))
 ```
-Finally, we can get Y from the underlying poisson distribution
+
+Finally, we can get Y from the underlying *Poisson* distribution. Remember that it only has one parameter $\lambda$, so-called shape parameter, which defines both the center and the spread of the values. 
 Remember `r`, `d`, `q`, `p`?
 
 ```{r poisson-4}
+par(mfrow = c(1, 2), las = 1)
+
 Y <- rpois(n, lambda)
 
 summary(Y)
 hist(Y)
+barplot(table(factor(Y, levels = min(Y):max(Y))))
 ```
 
 
@@ -196,7 +198,7 @@ Let's add this step to the plot above:
 ## Base R {.unnumbered}
 
 ```{r poisson-5}
-par(mfrow = c(1, 3))
+par(mfrow = c(1, 3), las = 1)
 
 # Systematic component: linear predictor
 plot(x = X,
@@ -209,7 +211,6 @@ plot(x = X,
      cex.main = 0.8,
      ylab = expression(mu[i]),
      xlab = expression(X[i]),
-     las  = 1, 
      bty = "n")
 text(x = 1.5,
      y = 0.7,
@@ -226,7 +227,7 @@ plot(x = X,
      cex.main = 0.8,
      ylab = expression(lambda[i]),
      xlab = expression(X[i]),
-     las = 1, 
+     ylim = range(Y),
      bty = "n")
 text(x = -1,
      y = 7.85,
@@ -243,7 +244,7 @@ plot(x = X,
      cex.main = 0.8,
      ylab = "Y",
      xlab = expression(X[i]),
-     las = 1, 
+     ylim = range(Y),
      bty = "n")
 points(x = X,
        y = lambda,
@@ -276,11 +277,12 @@ syst2 <- ggplot() +
   geom_point(aes(x = X, y = lambda),
                  color = viridis(1, 0.5)) +
   labs(x = expression(X[i]),
-       y = expression(p[i]),
+       y = expression(lambda[i]),
        title = "Lambda") +
   annotate("text",
            label = expression(lambda[i] == exp(mu[i])),
-           x = -1, y = 7.85)
+           x = -1, y = 11) +
+  ylim(range(Y))
 
 yhat <- ggplot() +
   geom_point(aes(x = X, y = Y), color = viridis(2, 0.5)[2]) +
@@ -304,7 +306,7 @@ The Poisson PDF for a single observation:
 $$
 f_{Poisson}(y_{i}|\lambda) = 
 \begin{cases}
-  \frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} & 
+  \dfrac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} & 
     \text{ for } \lambda > 0\text{ and }y_{i}=0,1,\ldots\\
   0 & 
     otherwise
@@ -314,22 +316,22 @@ $$
 The probability density of all the data (i.e., $N$ observations, given that $Y_i$ and $Y_j$ are independent conditional on $X$ for all $i\not= j$ and identically distributed)  is the product of all $N$ individual observations:
 
 $$
-Pr(Y|\lambda) = \prod_{i=1}^{N}	\frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} 
+Pr(Y|\lambda) = \mathcal{L}(Y|\lambda) = \prod_{i=1}^{N}	\frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} 
 $$
 
 This is the likelihood. But as usual, we prefer the log-likelihood:
 
 $$
-\ln L(\lambda|Y) = \sum_{i=1}^{n} (y_{i} ln(\lambda_i) - \lambda_i)
+\ln L(\lambda|Y) = \ell(\lambda|Y) = \sum_{i=1}^{n} (y_{i} ln(\lambda_i) - \lambda_i)
 $$
 
-Replacing $\lambda$ with the linear component (i.e. $X_{i}\beta$) gives us the likelihood function of our model:
+Replacing $\lambda$ with the reparametrized linear component $\lambda = e^{\mu_i} = e^{X_{i}\beta}$ gives us the likelihood function of our model:
 
 $$
-\ln L(\beta|Y) = \sum_{i=1}^{n} (y_{i} (X_{i}\beta) -e^{X_{i}\beta})\\
+\ell(\beta|Y) = \ln L(\beta|Y) = \sum_{i=1}^{n} (y_{i} (X_{i}\beta) -e^{X_{i}\beta})\\
 $$
 
-Program the Poisson log-likelihood function (cf. slide 13)
+Now we can program the Poisson log-likelihood function (cf. slide 13):
 
 ```{r poisson-7}
 ## Poisson MLE
@@ -364,11 +366,11 @@ res <-
 res # check results
 ```
 
-(How) Can we interpret those coefficients? 
+> (How) Can we interpret those coefficients? 
 
 ## Eck and Hultman 2007: One-sided violence against civilians {.unnumbered} 
 
-Load the eck_rep.dta replication dataset for @eck_hultman_2007
+Load the `eck_rep.dt`, a replication dataset for @eck_hultman_2007. 
 
 ```{r poisson-9}
 dta <- read.dta("raw-data/eck_rep.dta", convert.factors = FALSE)
@@ -429,13 +431,12 @@ m2 <-
   )
 summary(m2)
 
-# control=glm.control(maxit=100) increases the
-# number of maximum interations
+# control=glm.control(maxit=100) increases the number of maximum iterations
 ```
 
-Make a nice looking latex table of both models.
+Make a nice looking Latex table of both models:
 
-```{r negbin-2, results='asis'}
+```{r negbin-2, results='asis', message=FALSE}
 stargazer(
   list(m1, m2),
   out = "table_lab.tex",
@@ -451,17 +452,19 @@ stargazer(
     "Constant"
   ),
   dep.var.labels = c("Number killed in one-sided violence"),
+  model.names = c("Poisson", "Negative Binomial"),
+  float = "H", # latex output, keep the figure at exactly Here in text
   type = stargazer_opt
 )
 ```
 
 # Likelihood Ratio Test (Overdispersion)
 
-The likelihood ratio test is a test to compare two models, one of which is a special case of the other (Restricted and Unrestricted Model...).
+The likelihood ratio test is a test to compare two models, one of which is a special case of the other (Restricted and Unrestricted Model).
 
-Let L1 be the likelihood for the null model with m parameters and L2 be the likelihood for the alternative model with n parameters, n > m. One can show that when $n \to \infty$, $-2 \times log(\frac{L1}{L2})$ converges  to the $\chi^2$ distribution with $k = n - m$ degrees of freedom. See also @degroot_schervish_2012: pp. 543--544.
+Let $\mathcal{L_R}$ be the likelihood for the null, *restricted* model with $r$ parameters and $\mathcal{L_R}$ be the likelihood for the alternative, *unrestricted* model with $u$ parameters, $u>r$. One can show that when $u \to \infty$, $-2 \log\left(\dfrac{\mathcal{L_R}}{\mathcal{L_U}}\right)$ converges  to the $\chi^2$ distribution with $k = u - r$ degrees of freedom. See also @degroot_schervish_2012: pp. 543--544.
 
-Thus, $LRT = -2*log(L1) + 2*log(L2)$
+Thus, $LR = -2 \cdot \log(\mathcal{\hat L_u}) + 2 \cdot \log(\mathcal{\hat L_r}) = 2(\log \mathcal{\hat L_r} - \log \mathcal{\hat L_u})$
 
 ```{r lrt-1}
 L1 <- logLik(m1) # Log Likelihood of model 1
@@ -470,16 +473,16 @@ L2 <- logLik(m2) # Log Likelihood of model 2
 LRT <- -2 * L1 + 2 * L2 # converges to chi^2 distribution
 
 # Reject H0 if ... What is our H0 here?
-
-LRT > qchisq(0.95, df = 1)
+LRT > qchisq(0.95, df = 1) # why df = 1? 
 ```
 
+We can also use Likelihood ratio test for other examples of nested models, for instance to examine the differences in model specification. 
 
 # Quantities of Interest
 
 As usually we can interpret the results better if we look at meaningful quantities of interest.
 
-We look at the model from the Eck/Hultman paper.
+We look at the model from the @eck_hultman_2007  paper.
 
 ```{r negbin-3}
 m2 <-
@@ -522,7 +525,7 @@ S <- mvrnorm(nsim, gamma_hat, V_hat)
 
 *Next step*: Set up interesting scenarios.
 
-Autocracies
+Autocracies:
 
 ```{r sim-2}
 scenario1 <-
@@ -536,7 +539,7 @@ scenario1 <-
   ) 
 ```
 
-Democracies
+Democracies:
 
 ```{r sim-3}
 scenario2 <- cbind(
@@ -549,7 +552,7 @@ scenario2 <- cbind(
 )
 ```
 
-Anocracies
+Anocracies:
 
 ```{r sim-4}
 scenario3 <- cbind(
@@ -562,6 +565,7 @@ scenario3 <- cbind(
 ) 
 ```
 
+Calculate the linear predictor:
 
 ```{r sim-5}
 Xbeta1 <- S %*% t(scenario1)
@@ -572,7 +576,7 @@ Xbeta3 <- S %*% t(scenario3)
 ```
 
 
-To get expected values for lambda, we need to plug in the Xbeta values into the response function 
+To get expected values for lambda, we need to plug in the `Xbeta` values into the response function. 
 
 ```{r sim-6}
 lambda1 <- exp(Xbeta1)
@@ -582,36 +586,41 @@ lambda2 <- exp(Xbeta2)
 lambda3 <- exp(Xbeta3)
 ```
 
-*Now we need an additional step:* 
 
-Plug the lambda and theta into the negative binomial distribution. And then we average over the fundamental uncertainty for expected values. Please have a look at the @king_et_al_2000 article from Week 7 again for further information. 
+For OLS and Logit/Probit models we were able to use the fact that the systematic component $\mu_i = E[Y_i]$:   
+For OLS, the $E[Y_i] = X_i\beta$, for Logit model, $E[Y_i] = logit^{-1}(X_i\beta) =  \dfrac{\exp(X_i\beta)}{1+\exp(X_i\beta)} = \pi_i$. So we just stopped at this point and called the result the expected values, as including and averaging away the fundamental uncertainty (i.e. from each $\mu$, taking a large number of predicted values and taking their mean) would not have impacted our estimates.
+Now, $E[Y_i] = \lambda_i = e^{X_i\beta}$. These values, however, should contain the averaged fundamental uncertainty, too. Yet incorporating the fundamental uncertainty now requires taking these steps explicitly.  
 
-Get the theta.
+*So we need an additional step:* 
+
+Plug the `lambda` and `theta` into the negative binomial distribution and take many draws from it (i.e. get the predicted values). And then we average over the fundamental uncertainty for expected values. Please have a look at the @king_et_al_2000 article from Week 7 again for further information. 
+
+Get the `theta`:
 
 ```{r sim-7}
 theta <- m2$theta
 
 exp_auto <-
   sapply(lambda1, function(x)
-    mean(rnbinom(1000, size = theta, mu = x)))
+    mean(rnbinom(10000, size = theta, mu = x)))
 
 exp_demo <-
   sapply(lambda2, function(x)
-    mean(rnbinom(1000, size = theta, mu = x)))
+    mean(rnbinom(10000, size = theta, mu = x)))
 
 exp_ano <-
   sapply(lambda3, function(x)
-    mean(rnbinom(1000, size = theta, mu = x)))
+    mean(rnbinom(10000, size = theta, mu = x)))
 
 #we could have also done this in a for-loop
-
 # mean.auto <- rep(NA, length(lambda1))
 #
 # for(i in 1:length(lambda1)){
-#
 # mean.auto[i] <- mean(rnbinom(1000, size = theta, mu = lambda1[i]))
-#
 # }
+
+summary(as.vector(lambda1))
+summary(exp_auto)
 ```
 
 
@@ -623,7 +632,9 @@ Now we want to plot it.
 d1 <- density(exp_auto)
 d2 <- density(exp_demo)
 d3 <- density(exp_ano)
-
+d1 <- density(lambda1)
+d2 <- density(lambda2)
+d3 <- density(lambda3)
 plot(d3, 
      main = "Expected Killings in Democracies, Autocracies and Anocracies",
      xlab = "Expected killings by rebel groups in civil war situation 
@@ -662,8 +673,7 @@ ggplot(df, aes(x = exp_values, fill = id)) +
   geom_density(alpha = 0.4) +
   guides(fill = guide_legend(title = "")) +
   xlab("Expected Killings") +
-  ylab("Density") +
-  theme_bw()
+  ylab("Density") 
 ```
 
 
@@ -673,9 +683,10 @@ In their paper Eck and Hultman also want to look at differences between killings
 
 Now it's your turn. You will run similar models and calculate first differences to look at the substantive effects.
 
-Eck and Hultman subset the data to government and rebel killings and run the previous model separately on these two subsets. *Any other ideas how we could incorporate this into one model?*
+Eck and Hultman subset the data to government and rebel killings and run the previous model separately on these two subsets. 
 
-Answer:
+> *Any other ideas how we could incorporate this into one model?*
+
 
 ## Estimate models {.unnumbered}
 
@@ -964,6 +975,30 @@ plot + scale_color_grey(start=0,end=0.45) & theme(legend.position = "right")
 # Concluding Remarks {.unnumbered .unlisted}
 
 In your final homework you will further explore count models.
+
+# Appendix {-}
+
+## Appendix I: Model Selection Based on Information Criteria {-}
+
+We have already discussed the Likelihood ratio test, which is a way to compare nested models. There are also alternatives here, which you can see reported in `stargazer` output and also in `summary()` output.
+
+The *Akaike Information Criterion*, or *AIC* for short, is a method for scoring and selecting a model. It bases on the likelihood and the complexity of the model, i.e. the number of estimated parameters $k$. 
+
+$$AIC = 2k - 2log(\hat{\mathcal L})$$
+
+To use AIC for model selection, we simply choose the model giving smallest AIC over the set of models considered.
+
+```{r AIC-1}
+# Poisson model
+L1 <- as.numeric(logLik(m1)) # Log Likelihood of model 1
+L2 <- as.numeric(logLik(m2)) # Log Likelihood of model 2
+2*length(m1$coefficients) - 2*L1
+AIC(m1) # built-in version 
+
+# Negative Binomial Model
+2*(length(m1$coefficients) + 1) - 2*L2
+AIC(m2) # built-in version 
+```
 
 
 # References {.unnumbered .unlisted}
