@@ -187,7 +187,12 @@ Remember `r`, `d`, `q`, `p`?
 Y <- rpois(n, lambda)
 
 summary(Y)
-hist(Y)
+
+# we can use a barplot to visualize the distribution:
+barplot(table(Y),
+        col = viridis(1),
+        border = F,
+        main = "Distribution of Y")
 ```
 
 
@@ -370,6 +375,8 @@ res # check results
 
 Load the eck_rep.dta replication dataset for @eck_hultman_2007
 
+![Eck & Hultman, 2007, Abstract](images/Eck_Hultman_abstract.png)
+
 ```{r poisson-9}
 dta <- read.dta("raw-data/eck_rep.dta", convert.factors = FALSE)
 
@@ -410,6 +417,8 @@ res2
 # Poisson and Negative Binomial in GLM
 
 We are going to replicate model 4, p.243 in @eck_hultman_2007.
+
+![Eck & Hultman, 2007, Table IV, p.243](images/Eck_Hultman_table_iv.png)
 
 ```{r negbin-1}
 # We start with a Poisson Model
@@ -671,7 +680,7 @@ ggplot(df, aes(x = exp_values, fill = id)) +
 
 In their paper Eck and Hultman also want to look at differences between killings by governments and rebels. 
 
-Now it's your turn. You will run similar models and calculate first differences to look at the substantive effects.
+Now it's your turn. You will run similar models and calculate first differences between (a) autocracies and democracies, and (b) autocracies and anocracies, to look at the substantive effects.
 
 Eck and Hultman subset the data to government and rebel killings and run the previous model separately on these two subsets. *Any other ideas how we could incorporate this into one model?*
 
@@ -749,7 +758,7 @@ exp_scenario1_m3 <-
 exp_scenario2_m3 <-
 exp_scenario3_m3 <-
 
-exp_values_m3 <- c(exp_scenario1_m3, exp_scenario2_m3, exp_scenario3_m3)
+exp_values_m3 <- cbind(exp_scenario1_m3, exp_scenario2_m3, exp_scenario3_m3)
 df_m3 <- data.frame(exp_values_m3)
 ```
 
