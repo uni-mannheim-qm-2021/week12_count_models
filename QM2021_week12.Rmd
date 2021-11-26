@@ -374,7 +374,7 @@ res # check results
 
 ## Eck and Hultman 2007: One-sided violence against civilians {.unnumbered}
 
-Load the `eck_rep.dt`, a replication dataset for @eck_hultman_2007.
+Load the `eck_rep.dta`, a replication dataset for @eck_hultman_2007.
 
 ![Eck & Hultman, 2007, Abstract](images/Eck_Hultman_abstract.png)
 
