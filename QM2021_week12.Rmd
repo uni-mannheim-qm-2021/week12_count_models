@@ -101,6 +101,8 @@ theme_set(theme_classic() + # start with classic theme
 
 ```
 
+
+
 # MLE: Poisson Regression {.tabset}
 
 What first?
@@ -233,7 +235,7 @@ plot(x = X,
      ylim = range(Y),
      bty = "n")
 text(x = -1,
-     y = 11,
+     y = 15,
      labels = expression(lambda[i] == exp(mu[i])))
 
 # observed values
@@ -255,14 +257,14 @@ points(x = X,
        cex = 0.5,
        col = viridis(2, 0.5)[1])
 text(x = -1,
-     y = 11,
-     labels = expression(lambda[i] == exp(mu[i])))
+     y = 15,
+     labels = expression(paste("Y ~ Poisson", (y[i] *"|"*lambda[i]))))
 
 ```
 
 ## ggplot2 {.unnumbered}
 
-```{r poisson-6, warning=FALSE, out.width="100%"}
+```{r poisson-6, warning=FALSE}
 # Systematic component: LP
 syst <- ggplot() +
   geom_point(aes(x = X, y = beta0 + beta1*X),
@@ -281,10 +283,10 @@ syst2 <- ggplot() +
                  color = viridis(1, 0.5)) +
   labs(x = expression(X[i]),
        y = expression(lambda[i]),
-       title = "Lambda") +
+       title = expression(paste("Simulated ", lambda))) +
   annotate("text",
            label = expression(lambda[i] == exp(mu[i])),
-           x = -1, y = 11) +
+           x = -1, y = 15) +
   ylim(range(Y))
 
 yhat <- ggplot() +
@@ -294,8 +296,8 @@ yhat <- ggplot() +
        y = expression(Y[i]),
        title = "Observed Y") +
   annotate("text",
-           label = expression(lambda[i] == exp(mu[i])),
-           x = -1, y = 11)
+           label = expression(paste("Y ~ Poisson", (y[i] *"|"*lambda[i]))),
+           x = -1, y = 15)
 
 syst + syst2 + yhat +
   plot_annotation(title = "Simulated Quantities") &
@@ -307,7 +309,7 @@ syst + syst2 + yhat +
 The Poisson probability function for a single observation $i$:
 
 $$
-f_{Poisson}(y_{i}|\lambda) = 
+f_{\text{Poisson}}(y_{i}|\lambda) = 
 \begin{cases}
   \dfrac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} & 
     \text{for } \lambda > 0\text{ and }y_{i}=0,\,1,\ldots\\
@@ -316,30 +318,29 @@ f_{Poisson}(y_{i}|\lambda) =
 \end{cases}
 $$
 
-The probability density of all the data (i.e., $N$ observations, given that $Y_i$ and $Y_j$ are independent conditional on $X$ for all $i\not= j$ and identically distributed) is the product of all $N$ individual observations:
+The probability density of all the data (i.e., $N$ observations, given that $Y_i$ and $Y_j$ are independent conditional on $X$ for all $i \neq j$ and identically distributed) is the product of all $N$ individual observations:
 
 $$
-\Pr(Y|\lambda) = \prod_{i=1}^{N}    \frac{e^{-\lambda_i}\lambda_i^{y_{i}}}{y_{i}!} 
+\Pr(Y|\lambda) = \prod_{i=1}^{N} \frac{e^{-\lambda}\lambda^{y_{i}}}{y_{i}!} 
 $$
 
-This is also the likelihood.
+From this, we can obtain the likelihood function.
 But as usual, we prefer the (shortened) log-likelihood:
 
 $$
-\ln L(\lambda|Y) = \ell(\lambda|Y) \propto \sum_{i=1}^{n} (y_{i} ln(\lambda_i) - \lambda_i)
+\ln L(\lambda|Y)  \propto \sum_{i=1}^{n} (y_{i} ln(\lambda_i) - \lambda_i)
 $$
 
-Replacing $\lambda$ with the reparametrized linear predictor $\lambda = e^{\mu_i} = e^{X_{i}\beta}$ gives us the likelihood function of our model:
+Replacing $\lambda$ with the reparametrized linear predictor $\lambda = e^{\mu_i} = e^{X_{i}\beta}$ gives us the log-likelihood function of our model:
 
 $$
-\ell(\beta|Y) = \ln L(\beta|Y) \propto \sum_{i=1}^{n} (y_{i} X_{i}\beta -e^{X_{i}\beta})\\
+\ln L(\beta|Y) \propto \sum_{i=1}^{n} (y_{i} X_{i}\beta -e^{X_{i}\beta})\\
 $$
 
 Now we can program the Poisson log-likelihood function (cf. slide 13):
 
 ```{r poisson-7}
 ## Poisson MLE
-
 # Log Likelihood
 pois_ll <- function(X, Y, theta) {
   beta0 <- theta[1]
@@ -462,8 +463,7 @@ stargazer(
     "Constant"
   ),
   dep.var.labels = c("Number killed in one-sided violence"),
-  model.names = c("Poisson", "Negative Binomial"),
-  float = "H", # latex output, keep the figure at exactly Here in text
+  table.placement = "H", # latex output, keep the figure at exactly Here in text
   type = stargazer_opt
 )
 ```
@@ -489,8 +489,24 @@ LRT <- -2 * L1 + 2 * L2 # converges to chi^2 distribution
 # Reject H0 if ... What is our H0 here?
 LRT > qchisq(0.95, df = 1) # why df = 1? 
 ```
+```{r lrt-2}
+#create density curve
+plot(
+  x = seq(0, 20, length.out = 100),
+  y = dchisq(seq(0, 20, length.out = 100), df = 1),
+  main = 'Chi-Square Distribution (df = 1)',
+  ylab = 'Density',
+  lwd = 2,
+  xlab = "X",
+  las = 1,
+  type = "l"
+)
 
-We can also use Likelihood ratio test for other examples of nested models, for instance to examine the differences in the specification of teh systematic component.
+# abline(v = LRT)
+abline(v =  qchisq(0.95, df = 1), col = "red")
+```
+
+We can also use Likelihood ratio test for other examples of nested models, for instance to examine the differences in the specification of the systematic component.
 
 # Quantities of Interest
 
@@ -554,6 +570,7 @@ scenario1 <- cbind(
   mean(dta$prior_os, na.rm = TRUE) # mean of prior one-sided violence
 ) 
 colnames(scenario1) <- names(gamma_hat)
+scenario1
 ```
 
 Democracies:
@@ -561,6 +578,7 @@ Democracies:
 ```{r sim-3}
 scenario2 <- scenario1 # copy the existing baseline scenario 
 scenario2[which(colnames(scenario2) == "demo")] <- 1 # change one value 
+scenario2
 ```
 
 Autocracies:
@@ -568,6 +586,7 @@ Autocracies:
 ```{r sim-4}
 scenario3 <- scenario1
 scenario3[which(colnames(scenario3) == "auto")] <- 1
+scenario3
 ```
 
 Calculate the linear predictor:
@@ -586,7 +605,7 @@ lambda2 <- exp(Xbeta2)
 lambda3 <- exp(Xbeta3)
 ```
 
-*Now we need an additional step:*
+*Now we can add an additional step:*
 
 Plug the `lambda` and `theta` into the negative binomial distribution and take many draws from it (i.e. get the predicted values).
 And then we average over the fundamental uncertainty for expected values.
@@ -609,12 +628,12 @@ exp_auto <-
 
 #we could have also done this in a for-loop
 # mean.auto <- rep(NA, length(lambda1))
-#
-# for(i in 1:length(lambda1)){
-# mean.auto[i] <- mean(rnbinom(1000, size = theta, mu = lambda1[i]))
+# 
+# for (i in 1:length(lambda1)) {
+#   mean.auto[i] <- mean(rnbinom(1000, size = theta, mu = lambda1[i]))
 # }
 
-summary(as.vector(lambda3))
+summary(as.vector(lambda3)) # as.vector ensures the horizontal summary output 
 summary(exp_auto)
 ```
 
@@ -629,12 +648,12 @@ d3 <- density(exp_ano)
 
 plot(d3, 
      main = "Expected Killings in Democracies, Autocracies and Anocracies",
-     xlab = "Expected killings by rebel groups in civil war situation 
-     with 48 killings in the prior year (mean value)",
+     xlab = "Expected killings",
      yaxt = "n", ylab = "",
      xlim = c(0, max(c(exp_auto, exp_demo, exp_ano))), # flexible limit
      type = "n",
-     bty = "n")
+     bty = "n",
+     sub = "by rebel groups in civil war situation with 48 killings in the prior year (mean value)")
 polygon(d3, col="#ff000050", border="black") # red: Anocracy
 polygon(d2, col="#0000ff50", border="black") # blue: Democracy
 polygon(d1, col="#00ff5550", border="black") # green: Autocracy
@@ -831,11 +850,13 @@ Continue to calculate the first differences between different scenarios for mode
 Calculate the following first differences for both models:
 
 $$
-FD_{Autocracy-Democracy} = E(Y | X_{Autocracy}) - E(Y | X_{Democracy})
-$$ and
+FD_{\text{Autocracy-Democracy}} = E(Y | X_{\text{Autocracy}}) - E(Y | X_{\text{Democracy}})
+$$ 
+
+and
 
 $$
-FD_{Autocracy-Anocracy} = E(Y | X_{Autocracy}) - E(Y | X_{Anocracy})
+FD_{\text{Autocracy-Anocracy}} = E(Y | X_{\text{Autocracy}}) - E(Y | X_{\text{Anocracy}})
 $$
 
 ```{r fd-4, error = T}
