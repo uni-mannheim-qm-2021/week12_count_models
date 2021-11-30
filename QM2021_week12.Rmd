@@ -476,7 +476,7 @@ Let $\mathcal{L_R}$ be the likelihood for the null, *restricted* model with $r$ 
 One can show that when $u \to \infty$, $-2 \log\left(\dfrac{\mathcal{L_R}}{\mathcal{L_U}}\right)$ converges to the $\chi^2$ distribution with $k = u - r$ degrees of freedom.
 See also @degroot_schervish_2012: pp. 543--544.
 
-Thus, $LR = -2 \cdot \log(\mathcal{\hat L_u}) + 2 \cdot \log(\mathcal{\hat L_r}) = 2(\log \mathcal{\hat L_r} - \log \mathcal{\hat L_u})$.
+Thus, $LR = -2 \cdot \log(\mathcal{\hat L_r}) + 2 \cdot \log(\mathcal{\hat L_u}) = 2(\log \mathcal{\hat L_u} - \log \mathcal{\hat L_r})$.
 
 One could think of Poisson and Negative Binomial Models as approximately nested, and the LR test is often applied to decide between the Poisson and Negative Binomial specifications.
 
